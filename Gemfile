@@ -7,9 +7,9 @@ end
 
 gem 'devise_token_auth'
 gem 'omniauth'
-gem 'rails', '~> 5.1.4'
 gem 'pg', '~> 0.18'
 gem 'puma', '~> 3.7'
+gem 'rails', '~> 5.1.4'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.5'
