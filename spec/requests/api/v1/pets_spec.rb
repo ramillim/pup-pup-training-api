@@ -31,6 +31,11 @@ describe Api::V1::PetsController, type: :request do
 
       expect(response).to have_http_status(200)
       expect(json['id']).to eq(pet.id)
+      expect(json['name']).to eq(pet.name)
+      expect(json['birth_date']).to eq(pet.birth_date.strftime('%F'))
+
+      # Not serialized properties
+      expect(json['user_id']).to be_nil
     end
   end
 end
