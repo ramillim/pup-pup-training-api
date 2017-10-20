@@ -42,6 +42,8 @@ describe Api::V1::PetsController, type: :request do
       get api_v1_pet_path(pet), headers: get_auth_token(create(:user))
 
       expect(response).to have_http_status(404)
+      expect(json['errors']['code']).to eq(404)
+      expect(json['errors']['message']).to eq ('404 Not Found')
     end
   end
 end
