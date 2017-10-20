@@ -32,7 +32,7 @@ module Api
       private
 
       def set_pet
-        @pet = Pet.find(params[:id])
+        @pet = Pet.where(user_id: current_user.id).find(params[:id])
       end
 
       def pet_params

@@ -37,5 +37,11 @@ describe Api::V1::PetsController, type: :request do
       # Not serialized properties
       expect(json['user_id']).to be_nil
     end
+
+    it 'only shows pets that belong to the authenticated user' do
+      get api_v1_pet_path(pet), headers: get_auth_token(create(:user))
+
+      expect(response).to have_http_status(404)
+    end
   end
 end
