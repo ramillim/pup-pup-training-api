@@ -1,6 +1,4 @@
 class Pet < ApplicationRecord
-  attr_accessor :name, :birth_data, :user
-
   belongs_to :user
 
   validates :name, presence: true
