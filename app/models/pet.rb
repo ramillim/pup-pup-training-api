@@ -1,5 +1,7 @@
 class Pet < ApplicationRecord
-  attr_accessor :name, :birth_date
+  attr_accessor :name, :birth_data, :user
+
+  belongs_to :user
 
   validates :name, presence: true
   validate :birth_date_is_not_in_future

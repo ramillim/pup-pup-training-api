@@ -6,7 +6,7 @@ class User < ApplicationRecord
          :rememberable,
          :trackable,
          :validatable,
-         :confirmable,
+         # :confirmable,
          :omniauthable
   include DeviseTokenAuth::Concerns::User
 end
