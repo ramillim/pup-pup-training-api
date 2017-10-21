@@ -5,4 +5,3 @@ class PetSerializer < ActiveModel::Serializer
     object.birth_date ? object.birth_date.strftime('%F') : nil
   end
 end
-
