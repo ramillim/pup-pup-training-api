@@ -29,6 +29,17 @@ module Api
         end
       end
 
+      # PUT /api/v1/pets
+      def update
+        if @pet.update_attributes(pet_params)
+          render json: @pet, status: :accepted, location: url_for(action: :show, id: @pet)
+        else
+          message = { errors: { code: 400,
+                                message: @pet.errors.full_messages.to_sentence } }
+          render json: message, status: :bad_request
+        end
+      end
+
       private
 
       def set_pet
@@ -36,7 +47,7 @@ module Api
       end
 
       def pet_params
-        params.fetch(:pet).permit(:name, :birth_date)
+        params.require(:pet).permit(:name, :birth_date)
       end
     end
   end

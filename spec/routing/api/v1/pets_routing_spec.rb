@@ -14,16 +14,16 @@ describe Api::V1::PetsController, type: :routing do
       expect(post: '/api/v1/pets').to route_to('api/v1/pets#create')
     end
 
-    xit 'routes to #update via PUT' do
-      expect(put: '/api/v1s/1').to route_to('api/v1s#update', id: '1')
+    it 'routes to #update via PUT' do
+      expect(put: '/api/v1/pets/1').to route_to('api/v1/pets#update', id: '1')
     end
 
-    xit 'routes to #update via PATCH' do
-      expect(patch: '/api/v1s/1').to route_to('api/v1s#update', id: '1')
+    it 'routes to #update via PATCH' do
+      expect(patch: '/api/v1/pets/1').to route_to('api/v1/pets#update', id: '1')
     end
 
-    xit 'routes to #destroy' do
-      expect(delete: '/api/v1s/1').to route_to('api/v1s#destroy', id: '1')
+    it 'routes to #destroy' do
+      expect(delete: '/api/v1/pets/1').to route_to('api/v1/pets#destroy', id: '1')
     end
   end
 end
