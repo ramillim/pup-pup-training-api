@@ -97,29 +97,69 @@ describe Api::V1::PetsController, type: :request do
     it 'updates a pet for an authenticated user' do
       new_name = 'Woof'
       params[:name] = new_name
-      put api_v1_pet_path(params[:id]), params: { pet: params }, headers: get_auth_token(user)
+      put api_v1_pet_path(params[:id]),
+          params: { pet: params },
+          headers: get_auth_token(user)
 
-      expect(response).to have_http_status(:accepted)
+      expect(response).to have_http_status(:ok)
       expect(json['name']).to eq(new_name)
       expect(json['birth_date']).to eq(params[:birth_date].strftime('%F'))
     end
 
-    it 'does not update attributes that are not specified' do
+    it 'only updates pets that belong to an authenticated user' do
+      patch api_v1_pet_path(params[:id]),
+            params: { pet: params },
+            headers: get_auth_token(create(:user))
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it 'does only updates attributes included in the payload' do
       old_birth_date = pet.birth_date.strftime('%F')
       new_name = 'Woof'
       params[:name] = new_name
       params.delete(:birth_date)
-      patch api_v1_pet_path(params[:id]), params: { pet: params }, headers: get_auth_token(user)
+      patch api_v1_pet_path(params[:id]),
+            params: { pet: params },
+            headers: get_auth_token(user)
 
-      expect(response).to have_http_status(:accepted)
+      expect(response).to have_http_status(:ok)
       expect(json['name']).to eq(new_name)
       expect(json['birth_date']).to eq(old_birth_date)
     end
 
-    it 'only updates pets that belong to an authenticated user' do
+    it 'returns an error if the pet name is blank' do
+      params[:name] = ''
+      put api_v1_pet_path(params[:id]),
+          params: { pet: params },
+          headers: get_auth_token(user)
+
+      expect(response).to have_http_status(:bad_request)
+      expect(json['errors']['message']).to eq("Name can't be blank")
+    end
+  end
+
+  describe 'DELETE /api/v1/pets/1' do
+    it 'requires authentication' do
+      delete api_v1_pet_path(pet)
+
+      expect(response).to have_http_status(:unauthorized)
     end
 
-    it 'returns an error if the pet name is blank' do
+    it 'deletes a pet that belongs to an authenticated user' do
+      expect do
+        delete api_v1_pet_path(pet.id), headers: get_auth_token(user)
+      end.to change { Pet.count }.by(-1)
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'does not delete a pet belonging to another user' do
+      expect do
+        delete api_v1_pet_path(pet.id), headers: get_auth_token(create(:user))
+      end.to_not change { Pet.count }
+
+      expect(response).to have_http_status(:not_found)
     end
   end
 end

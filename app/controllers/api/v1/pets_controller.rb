@@ -32,7 +32,18 @@ module Api
       # PUT/PATCH /api/v1/pets
       def update
         if @pet.update_attributes(pet_params)
-          render json: @pet, status: :accepted, location: url_for(action: :show, id: @pet)
+          render json: @pet, status: :ok, location: url_for(action: :show, id: @pet)
+        else
+          message = { errors: { code: 400,
+                                message: @pet.errors.full_messages.to_sentence } }
+          render json: message, status: :bad_request
+        end
+      end
+
+      # DELETE /api/v1/pets/1
+      def destroy
+        if @pet.destroy
+          render json: @pet, status: :ok
         else
           message = { errors: { code: 400,
                                 message: @pet.errors.full_messages.to_sentence } }

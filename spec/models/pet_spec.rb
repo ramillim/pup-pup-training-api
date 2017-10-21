@@ -12,7 +12,7 @@ describe Pet, type: :model do
 
   it 'validates a birth_date in the past' do
     valid_pet = Pet.new(name: 'Rover', birth_date: 2.days.ago, user: user)
-    puts valid_pet.user.email
+
     expect(valid_pet).to be_valid
   end
 
