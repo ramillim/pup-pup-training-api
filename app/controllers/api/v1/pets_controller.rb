@@ -29,7 +29,7 @@ module Api
         end
       end
 
-      # PUT /api/v1/pets
+      # PUT/PATCH /api/v1/pets
       def update
         if @pet.update_attributes(pet_params)
           render json: @pet, status: :accepted, location: url_for(action: :show, id: @pet)

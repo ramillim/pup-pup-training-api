@@ -47,7 +47,7 @@ describe Api::V1::PetsController, type: :request do
     end
   end
 
-  describe 'POST /api/v1/pets/1' do
+  describe 'POST /api/v1/pets' do
     let(:pet_params) do
       { pet: FactoryGirl.attributes_for(:pet) }
     end
@@ -84,8 +84,36 @@ describe Api::V1::PetsController, type: :request do
     end
   end
 
-  describe 'PUT /api/v1/pets/1' do
+  describe 'PUT/PATCH /api/v1/pets/1' do
+    let(:params) do
+      {
+        id: pet.id,
+        name: pet.name,
+        birth_date: pet.birth_date,
+        user_id: user.id
+      }
+    end
+
     it 'updates a pet for an authenticated user' do
+      new_name = 'Woof'
+      params[:name] = new_name
+      put api_v1_pet_path(params[:id]), params: { pet: params }, headers: get_auth_token(user)
+
+      expect(response).to have_http_status(:accepted)
+      expect(json['name']).to eq(new_name)
+      expect(json['birth_date']).to eq(params[:birth_date].strftime('%F'))
+    end
+
+    it 'does not update attributes that are not specified' do
+      old_birth_date = pet.birth_date.strftime('%F')
+      new_name = 'Woof'
+      params[:name] = new_name
+      params.delete(:birth_date)
+      patch api_v1_pet_path(params[:id]), params: { pet: params }, headers: get_auth_token(user)
+
+      expect(response).to have_http_status(:accepted)
+      expect(json['name']).to eq(new_name)
+      expect(json['birth_date']).to eq(old_birth_date)
     end
 
     it 'only updates pets that belong to an authenticated user' do
