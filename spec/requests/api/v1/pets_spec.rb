@@ -43,7 +43,7 @@ describe Api::V1::PetsController, type: :request do
 
       expect(response).to have_http_status(:not_found)
       expect(json['errors']['code']).to eq(404)
-      expect(json['errors']['message']).to eq ('404 Not Found')
+      expect(json['errors']['message']).to eq('404 Not Found')
     end
   end
 
@@ -59,9 +59,9 @@ describe Api::V1::PetsController, type: :request do
     end
 
     it 'creates a pet for an authenticated user' do
-      expect {
+      expect do
         post api_v1_pets_path, params: pet_params, headers: get_auth_token(user)
-      }.to change { Pet.count }.by(1)
+      end.to change { Pet.count }.by(1)
 
       expect(response).to have_http_status(:created)
       expect(json['name']).to eq(pet_params[:pet][:name])

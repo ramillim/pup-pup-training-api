@@ -8,8 +8,16 @@ AllCops:
     - log/*
     - tmp/*
 
-Rails:
-  Enabled: true
-
 Documentation:
   Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - "**/*_spec.rb"
+
+Metrics/ModuleLength:
+  Exclude:
+    - "**/*_spec.rb"
+
+Rails:
+  Enabled: true

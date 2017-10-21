@@ -2,8 +2,8 @@ module AuthTokenHelpers
   def get_auth_token(user)
     auth_response_headers = sign_in(user)
     {
-      'HTTP_ACCEPT': 'application/json',
-      'access-token': auth_response_headers['access-token'],
+      HTTP_ACCEPT: 'application/json',
+      'access-token' => auth_response_headers['access-token'],
       client: auth_response_headers['client'],
       expiry: auth_response_headers['expiry'],
       uid: auth_response_headers['uid']

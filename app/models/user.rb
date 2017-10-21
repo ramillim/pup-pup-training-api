@@ -10,5 +10,5 @@ class User < ApplicationRecord
          :omniauthable
   include DeviseTokenAuth::Concerns::User
 
-  has_many :pets
+  has_many :pets, dependent: :destroy
 end

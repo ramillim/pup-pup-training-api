@@ -10,7 +10,7 @@ class ApplicationController < ActionController::API
   end
 
   def record_not_found
-    message = { errors: { code: 404, message: '404 Not Found'} }
+    message = { errors: { code: 404, message: '404 Not Found' } }
     render json: message, status: :not_found
   end
 end
