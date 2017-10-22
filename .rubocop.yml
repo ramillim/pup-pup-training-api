@@ -11,6 +11,9 @@ AllCops:
 Documentation:
   Enabled: false
 
+Layout/EndOfLine:
+  Enabled: native
+
 Metrics/BlockLength:
   Exclude:
     - "**/*_spec.rb"

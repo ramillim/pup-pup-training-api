@@ -23,12 +23,6 @@ Layout/EmptyLinesAroundBlockBody:
   Exclude:
     - 'db/schema.rb'
 
-# Offense count: 37
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: native, lf, crlf
-Layout/EndOfLine:
-  Enabled: false
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/BlockComments:
