@@ -157,7 +157,7 @@ describe Api::V1::PetsController, type: :request do
     it 'does not delete a pet belonging to another user' do
       expect do
         delete api_v1_pet_path(pet.id), headers: get_auth_token(create(:user))
-      end.to_not change { Pet.count }
+      end.to_not change(Pet, :count)
 
       expect(response).to have_http_status(:not_found)
     end

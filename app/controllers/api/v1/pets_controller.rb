@@ -23,9 +23,7 @@ module Api
         if @pet.save
           render json: @pet, status: :created, location: url_for(action: :show, id: @pet)
         else
-          message = { errors: { code: 400,
-                                message: @pet.errors.full_messages.to_sentence } }
-          render json: message, status: :bad_request
+          render_bad_request
         end
       end
 
@@ -34,9 +32,7 @@ module Api
         if @pet.update_attributes(pet_params)
           render json: @pet, status: :ok, location: url_for(action: :show, id: @pet)
         else
-          message = { errors: { code: 400,
-                                message: @pet.errors.full_messages.to_sentence } }
-          render json: message, status: :bad_request
+          render_bad_request
         end
       end
 
@@ -45,9 +41,7 @@ module Api
         if @pet.destroy
           render json: @pet, status: :ok
         else
-          message = { errors: { code: 400,
-                                message: @pet.errors.full_messages.to_sentence } }
-          render json: message, status: :bad_request
+          render_bad_request
         end
       end
 
@@ -59,6 +53,10 @@ module Api
 
       def pet_params
         params.require(:pet).permit(:name, :birth_date)
+      end
+
+      def render_bad_request
+        render_model_errors(@pet, :bad_request)
       end
     end
   end

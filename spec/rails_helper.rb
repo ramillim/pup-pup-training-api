@@ -46,5 +46,6 @@ RSpec.configure do |config|
 
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include AuthTokenHelpers, type: :request
+  config.include RequestHelpers, type: :controller
   config.include RequestHelpers, type: :request
 end
