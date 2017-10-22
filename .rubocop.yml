@@ -3,7 +3,6 @@ inherit_from: .rubocop_todo.yml
 AllCops:
   Exclude:
     - db/schema.rb
-    - db/migrate/*
     - bin/*
     - log/*
     - tmp/*
@@ -14,6 +13,10 @@ Documentation:
 Layout/EndOfLine:
   Enabled: native
 
+Metrics/AbcSize:
+  Exclude:
+    - db/migrate/*
+
 Metrics/BlockLength:
   Exclude:
     - "**/*_spec.rb"
@@ -21,6 +24,10 @@ Metrics/BlockLength:
 Metrics/LineLength:
   Max: 130
   IgnoredPatterns: ['\A#']
+
+Metrics/MethodLength:
+  Exclude:
+    - db/migrate/*
 
 Metrics/ModuleLength:
   Exclude:
