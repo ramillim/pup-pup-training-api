@@ -7,37 +7,36 @@ jobs:
   build:
     docker:
        - image: ramiladillo/pup-pup-training-api:0.0.1
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-       - image: circleci/postgres:10.0
+       - image: postgres:10.0
 
     working_directory: ~/repo
 
     steps:
       - checkout
 
-#      # Download and cache dependencies
-#      - restore_cache:
-#          keys:
-#          - v1-dependencies-{{ checksum "Gemfile.lock" }}
-#          # fallback to using the latest cache if no exact match is found
-#          - v1-dependencies-
-#
-#      - run:
-#          name: install dependencies
-#          command: |
-#            bundle install --jobs=4 --retry=3 --path vendor/bundle
-#
-#      - save_cache:
-#          paths:
-#            - ./vendor/bundle
-#          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      # This should go into custom primary image, here's only for the sake of explanation
+      - run:
+          name: Install Docker Compose
+          command: |
+            set -x
+            curl -L https://github.com/docker/compose/releases/download/1.11.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+            chmod +x /usr/local/bin/docker-compose
+      - run:
+          name: Build service
+          command: make
+
+      - run:
+          name: Start container and verify it's working
+          command: |
+            set -x
+            docker-compose up -d
 
       # Database setup
-      - run: bundle exec rails db:create
-      - run: bundle exec rails db:schema:load
+      - run: docker-compose web bundle exec rails db:create
+      - run: docker-compose web bundle exec rails db:schema:load
 
       # run tests!
       - run:
@@ -46,11 +45,11 @@ jobs:
             mkdir /tmp/test-results
             TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)"
 
-            bundle exec rspec --format progress \
-                            --format RspecJunitFormatter \
-                            --out /tmp/test-results/rspec.xml \
-                            --format progress \
-                            "${TEST_FILES}"
+            docker-compose web bundle exec rspec --format progress \
+              --format RspecJunitFormatter \
+              --out /tmp/test-results/rspec.xml \
+              --format progress \
+              "${TEST_FILES}"
 
       # collect reports
       - store_test_results:
