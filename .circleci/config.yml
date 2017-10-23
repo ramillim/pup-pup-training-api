@@ -17,24 +17,30 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
 
-      # This should go into custom primary image, here's only for the sake of explanation
-      - run:
-          name: Install Docker Compose
-          command: |
-            set -x
-            curl -L https://github.com/docker/compose/releases/download/1.11.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-            chmod +x /usr/local/bin/docker-compose
+      - run: apt-get install -y sudo
 
       - run:
-          name: Start container and verify it's working
+          name: Install Bundler dependencies
           command: |
-            set -x
-            docker-compose build
-            docker-compose up -d
+            bundle install --without development \
+                           --deployment \
+                           --retry=3 \
+                           --jobs=3
+      - save_cache:
+          key: pup-pup-training-api-bundler-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          paths:
+            # the --deployment flag tells bundler to install here
+            - vendor/bundle
 
-      # Database setup
-      - run: docker-compose run web bundle exec rails db:create
-      - run: docker-compose run web bundle exec rails db:schema:load
+      - run:
+          name: Set up database
+          environment:
+            - RAILS_ENV: test
+          command: |
+            sudo echo '
+            127.0.0.1 db
+            ' >> /etc/hosts
+            bundle exec rake db:create db:migrate
 
       # run tests!
       - run:
@@ -43,11 +49,12 @@ jobs:
             mkdir /tmp/test-results
             TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)"
 
-            docker-compose run web bundle exec rspec --format progress \
+            bundle exec rspec --format progress \
               --format RspecJunitFormatter \
               --out /tmp/test-results/rspec.xml \
               --format progress \
-              "${TEST_FILES}"
+              -- \
+              $TEST_FILES
 
       # collect reports
       - store_test_results:
