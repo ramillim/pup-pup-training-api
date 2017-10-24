@@ -5,6 +5,8 @@
 version: 2
 jobs:
   build:
+    environment:
+      CC_TEST_REPORTER_ID: 6d0eb2fffe7064bdbab003fc0bd6ed7075cb6fb3d70799f8a6366c03cf9e7735
     docker:
        - image: ramiladillo/pup-pup-training-api:0.0.1
        - image: postgres:10.0
@@ -59,6 +61,17 @@ jobs:
               --format progress \
               -- \
               $TEST_FILES
+
+      - run:
+          name: Prepare CodeClimate code coverage report
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+
+      - run: ./cc-test-reporter before-build
+      - run: ./cc-test-reporter format-coverage -t simplecov $CIRCLE_ARTIFACTS/coverage/.resultset.json
+      - run: ./cc-test-reporter after-build -t simplecov --exit-code $?
+      - run: ./cc-test-reporter upload-coverage
 
       # collect reports
       - store_test_results:
