@@ -17,17 +17,22 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
 
-      - run: apt-get install -y sudo
+      - restore_cache:
+          keys:
+          - pup-pup-training-api-v1-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          # fallback to using the latest cache if no exact match is found
+          - pup-pup-training-api-v1-{{ .Branch }}-
+          - pup-pup-training-api-v1-
 
       - run:
           name: Install Bundler dependencies
           command: |
             bundle install --without development \
-                           --deployment \
+                           --deployment
                            --retry=3 \
                            --jobs=3
       - save_cache:
-          key: pup-pup-training-api-bundler-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          key: pup-pup-training-api-v1-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
           paths:
             # the --deployment flag tells bundler to install here
             - vendor/bundle
@@ -42,9 +47,10 @@ jobs:
             ' >> /etc/hosts
             bundle exec rake db:create db:migrate
 
-      # run tests!
       - run:
           name: run tests
+          environment:
+            RAILS_ENV=: test
           command: |
             mkdir /tmp/test-results
             TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)"

@@ -1,5 +1,5 @@
 FROM ruby:2.4.2
-RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs
+RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs sudo
 RUN mkdir /pup-pup-trainer-api
 WORKDIR /pup-pup-trainer-api
 ADD Gemfile /pup-pup-trainer-api/Gemfile
