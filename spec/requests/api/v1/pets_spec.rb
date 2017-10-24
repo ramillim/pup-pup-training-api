@@ -161,5 +161,18 @@ describe Api::V1::PetsController, type: :request do
 
       expect(response).to have_http_status(:not_found)
     end
+
+    it 'returns a bad request error if the destroy failed' do
+      pet_double = double
+      allow(Pet).to receive_message_chain(:where, :find).and_return(pet_double)
+      allow(pet_double).to receive(:destroy).and_return(false)
+      allow(pet_double)
+        .to receive_message_chain(:errors, :full_messages, :to_sentence)
+        .and_return('Cannot delete')
+      delete api_v1_pet_path(pet.id), headers: get_auth_token(user)
+
+      expect(response).to have_http_status(:bad_request)
+      expect(json['errors']['message']).to eq('Cannot delete')
+    end
   end
 end
