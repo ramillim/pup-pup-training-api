@@ -1,0 +1,68 @@
+# Ruby CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-ruby/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+       - image: ramiladillo/pup-pup-training-api:0.0.1
+       - image: postgres:10.0
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      - restore_cache:
+          keys:
+          - pup-pup-training-api-bundler-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          # fallback to using the latest cache if no exact match is found
+          - pup-pup-training-api-bundler-{{ .Branch }}-
+          - pup-pup-training-api-bundler-
+
+      - run:
+          name: Install Bundler dependencies
+          command: |
+            bundle install --without development \
+                           --deployment \
+                           --retry=3 \
+                           --jobs=3
+      - save_cache:
+          key: pup-pup-training-api-bundler-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          paths:
+            # the --deployment flag tells bundler to install here
+            - vendor/bundle
+
+      - run:
+          name: Set up database
+          environment:
+            - RAILS_ENV: test
+          command: |
+            sudo echo '
+            127.0.0.1 db
+            ' >> /etc/hosts
+            bundle exec rake db:create db:migrate
+
+      - run:
+          name: run tests
+          command: |
+            mkdir /tmp/test-results
+            TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)"
+
+            bundle exec rspec --format progress \
+              --format RspecJunitFormatter \
+              --out /tmp/test-results/rspec.xml \
+              --format progress \
+              -- \
+              $TEST_FILES
+
+      # collect reports
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
