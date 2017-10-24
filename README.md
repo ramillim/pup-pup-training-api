@@ -1,24 +1,7 @@
-# README
+# Pup Pup Training API
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+[![CircleCI](https://circleci.com/gh/ramillim/pup-pup-training-api.svg?style=svg)](https://circleci.com/gh/ramillim/pup-pup-training-api)
 
-Things you may want to cover:
+[![Maintainability](https://api.codeclimate.com/v1/badges/571f942c35e5fbddbd00/maintainability)](https://codeclimate.com/github/ramillim/pup-pup-training-api/maintainability)
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+[![Test Coverage](https://api.codeclimate.com/v1/badges/571f942c35e5fbddbd00/test_coverage)](https://codeclimate.com/github/ramillim/pup-pup-training-api/test_coverage)
