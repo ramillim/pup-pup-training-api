@@ -5,6 +5,10 @@ module Api
       before_action :set_behavior, only: [:show, :update, :destroy]
       before_action :set_pet, only: [:index, :create]
 
+      def index
+        render json: @pet.behaviors.all
+      end
+
       private
 
       def set_behavior
@@ -12,7 +16,7 @@ module Api
       end
 
       def set_pet
-        @pet = Pet.where(uesr_id: current_user.id).find(params[:pet_id])
+        @pet = Pet.where(user_id: current_user.id).find(params[:pet_id])
       end
 
       def behavior_params
