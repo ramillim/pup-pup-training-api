@@ -39,6 +39,7 @@ module Api
         if @behavior.destroy
           render json: @behavior, status: :ok
         else
+          # TODO: This should probably return another code such as 500
           render_bad_request
         end
       end

@@ -41,9 +41,15 @@ describe Api::V1::PetsController, type: :request do
     it 'only shows pets that belong to the authenticated user' do
       get api_v1_pet_path(pet), headers: get_auth_token(create(:user))
 
+      expect(response).to have_http_status(:forbidden)
+      expect(json['errors']['code']).to eq(403)
+      expect(json['errors']['message']).to eq('403 Forbidden')
+    end
+
+    it 'returns an error if the pet is not found' do
+      get api_v1_pet_path(0), headers: get_auth_token(user)
+
       expect(response).to have_http_status(:not_found)
-      expect(json['errors']['code']).to eq(404)
-      expect(json['errors']['message']).to eq('404 Not Found')
     end
   end
 
@@ -111,6 +117,12 @@ describe Api::V1::PetsController, type: :request do
             params: { pet: params },
             headers: get_auth_token(create(:user))
 
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'returns an error if the pet is not found' do
+      put api_v1_pet_path(0), headers: get_auth_token(user)
+
       expect(response).to have_http_status(:not_found)
     end
 
@@ -154,17 +166,24 @@ describe Api::V1::PetsController, type: :request do
       expect(response).to have_http_status(:ok)
     end
 
+    it 'returns an error if the pet is not found' do
+      delete api_v1_pet_path(0), headers: get_auth_token(user)
+
+      expect(response).to have_http_status(:not_found)
+    end
+
     it 'does not delete a pet belonging to another user' do
       expect do
         delete api_v1_pet_path(pet.id), headers: get_auth_token(create(:user))
       end.to_not change(Pet, :count)
 
-      expect(response).to have_http_status(:not_found)
+      expect(response).to have_http_status(:forbidden)
     end
 
     it 'returns a bad request error if the destroy failed' do
       pet_double = double
-      allow(Pet).to receive_message_chain(:where, :find).and_return(pet_double)
+      allow(Pet).to receive(:find).and_return(pet_double)
+      allow(pet_double).to receive(:user).and_return(user)
       allow(pet_double).to receive(:destroy).and_return(false)
       allow(pet_double)
         .to receive_message_chain(:errors, :full_messages, :to_sentence)
