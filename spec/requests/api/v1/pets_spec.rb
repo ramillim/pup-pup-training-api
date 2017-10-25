@@ -114,7 +114,7 @@ describe Api::V1::PetsController, type: :request do
       expect(response).to have_http_status(:not_found)
     end
 
-    it 'does only updates attributes included in the payload' do
+    it 'only updates attributes included in the payload' do
       old_birth_date = pet.birth_date.strftime('%F')
       new_name = 'Woof'
       params[:name] = new_name
