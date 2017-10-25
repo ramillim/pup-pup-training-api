@@ -41,6 +41,7 @@ module Api
         if @pet.destroy
           render json: @pet, status: :ok
         else
+          # TODO: This should probably return another code such as 500
           render_bad_request
         end
       end
@@ -48,7 +49,13 @@ module Api
       private
 
       def set_pet
-        @pet = Pet.where(user_id: current_user.id).find(params[:id])
+        @pet = Pet.find(params[:id])
+        validate_ownership
+      end
+
+      def validate_ownership
+        return if @pet.user == current_user
+        render_json_error('403 Forbidden', :forbidden)
       end
 
       def pet_params
