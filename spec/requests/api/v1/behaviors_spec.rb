@@ -42,9 +42,15 @@ describe Api::V1::BehaviorsController, type: :request do
     it 'only shows behaviors that belong to the authenticated user' do
       get api_v1_behavior_path(behavior), headers: get_auth_token(create(:user))
 
+      expect(response).to have_http_status(:forbidden)
+      expect(json['errors']['code']).to eq(403)
+      expect(json['errors']['message']).to eq('403 Forbidden')
+    end
+
+    it 'returns record not found error if record does not exist' do
+      get api_v1_behavior_path(0), headers: get_auth_token(create(:user))
+
       expect(response).to have_http_status(:not_found)
-      expect(json['errors']['code']).to eq(404)
-      expect(json['errors']['message']).to eq('404 Not Found')
     end
   end
 
@@ -68,11 +74,10 @@ describe Api::V1::BehaviorsController, type: :request do
 
       expect(response).to have_http_status(:created)
       expect(json['name']).to eq(params[:behavior][:name])
-      expect(json['birth_date']).to eq(params[:behavior][:birth_date].strftime('%F'))
     end
 
     it 'returns an error if the behavior key is missing' do
-      post api_v1_behaviors_path, params: {}, headers: get_auth_token(user)
+      post api_v1_pet_behaviors_path(pet.id), params: {}, headers: get_auth_token(user)
 
       expect(response).to have_http_status(:bad_request)
       expect(json['errors']['message']).to match(/param is missing/)
@@ -80,7 +85,9 @@ describe Api::V1::BehaviorsController, type: :request do
 
     it 'returns an error if the behavior name is blank' do
       params[:behavior][:name] = nil
-      post api_v1_behaviors_path, params: params, headers: get_auth_token(user)
+      post api_v1_pet_behaviors_path(pet.id),
+           params: params,
+           headers: get_auth_token(user)
 
       expect(response).to have_http_status(:bad_request)
       expect(json['errors']['message']).to eq("Name can't be blank")
@@ -88,7 +95,7 @@ describe Api::V1::BehaviorsController, type: :request do
   end
 
   describe 'PUT/PATCH /api/v1/behaviors/1' do
-    let(:params) {{ id: behavior.id, name: behavior.name }}
+    let(:params) { { id: behavior.id, name: behavior.name } }
 
     it 'updates a behavior for an authenticated user' do
       new_name = 'Stay'
@@ -106,7 +113,7 @@ describe Api::V1::BehaviorsController, type: :request do
             params: { behavior: params },
             headers: get_auth_token(create(:user))
 
-      expect(response).to have_http_status(:not_found)
+      expect(response).to have_http_status(:forbidden)
     end
 
     it 'only updates attributes included in the payload' do
@@ -128,6 +135,12 @@ describe Api::V1::BehaviorsController, type: :request do
 
       expect(response).to have_http_status(:bad_request)
       expect(json['errors']['message']).to eq("Name can't be blank")
+    end
+
+    it 'returns record not found error if record does not exist' do
+      patch api_v1_behavior_path(0), params: {}, headers: get_auth_token(create(:user))
+
+      expect(response).to have_http_status(:not_found)
     end
   end
 
@@ -153,14 +166,13 @@ describe Api::V1::BehaviorsController, type: :request do
                headers: get_auth_token(create(:user))
       end.to_not change(Behavior, :count)
 
-      expect(response).to have_http_status(:not_found)
+      expect(response).to have_http_status(:forbidden)
     end
 
     it 'returns a bad request error if the destroy failed' do
       behavior_double = double
-      allow(Behavior)
-        .to receive_message_chain(:where, :find)
-        .and_return(behavior_double)
+      allow(Behavior).to receive(:find).and_return(behavior_double)
+      allow(behavior_double).to receive_message_chain(:pet, :user).and_return(user)
       allow(behavior_double).to receive(:destroy).and_return(false)
       allow(behavior_double)
         .to receive_message_chain(:errors, :full_messages, :to_sentence)
@@ -169,6 +181,12 @@ describe Api::V1::BehaviorsController, type: :request do
 
       expect(response).to have_http_status(:bad_request)
       expect(json['errors']['message']).to eq('Cannot delete')
+    end
+
+    it 'returns record not found error if record does not exist' do
+      delete api_v1_behavior_path(0), headers: get_auth_token(create(:user))
+
+      expect(response).to have_http_status(:not_found)
     end
   end
 end
