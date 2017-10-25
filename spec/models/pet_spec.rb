@@ -3,7 +3,7 @@ require 'rails_helper'
 describe Pet, type: :model do
   let(:user) { User.new }
 
-  it 'requires a name' do
+  it 'valides the presence of a name' do
     invalid_pet = Pet.new
 
     expect(invalid_pet).to_not be_valid

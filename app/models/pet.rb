@@ -1,5 +1,6 @@
 class Pet < ApplicationRecord
   belongs_to :user
+  has_many :behaviors, dependent: :destroy
 
   validates :name, presence: true
   validate :birth_date_is_not_in_future
