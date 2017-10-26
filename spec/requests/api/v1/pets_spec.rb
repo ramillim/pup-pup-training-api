@@ -12,7 +12,7 @@ describe Api::V1::PetsController, type: :request do
     end
 
     it 'returns the index for an authenticated user' do
-      get api_v1_pets_path, headers: get_auth_token(user)
+      get api_v1_pets_path, headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:ok)
       expect(json.first['id']).to eq(pet.id)
@@ -27,7 +27,7 @@ describe Api::V1::PetsController, type: :request do
     end
 
     it 'returns show pet for an authenticated user' do
-      get api_v1_pet_path(pet), headers: get_auth_token(user)
+      get api_v1_pet_path(pet), headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:ok)
       expect(json['id']).to eq(pet.id)
@@ -39,7 +39,7 @@ describe Api::V1::PetsController, type: :request do
     end
 
     it 'only shows pets that belong to the authenticated user' do
-      get api_v1_pet_path(pet), headers: get_auth_token(create(:user))
+      get api_v1_pet_path(pet), headers: create(:user).create_new_auth_token
 
       expect(response).to have_http_status(:forbidden)
       expect(json['errors']['code']).to eq(403)
@@ -47,7 +47,7 @@ describe Api::V1::PetsController, type: :request do
     end
 
     it 'returns an error if the pet is not found' do
-      get api_v1_pet_path(0), headers: get_auth_token(user)
+      get api_v1_pet_path(0), headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:not_found)
     end
@@ -66,7 +66,7 @@ describe Api::V1::PetsController, type: :request do
 
     it 'creates a pet for an authenticated user' do
       expect do
-        post api_v1_pets_path, params: pet_params, headers: get_auth_token(user)
+        post api_v1_pets_path, params: pet_params, headers: user.create_new_auth_token
       end.to change { Pet.count }.by(1)
 
       expect(response).to have_http_status(:created)
@@ -75,7 +75,7 @@ describe Api::V1::PetsController, type: :request do
     end
 
     it 'returns an error if the pet key is missing' do
-      post api_v1_pets_path, params: {}, headers: get_auth_token(user)
+      post api_v1_pets_path, params: {}, headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:bad_request)
       expect(json['errors']['message']).to match(/param is missing/)
@@ -83,7 +83,7 @@ describe Api::V1::PetsController, type: :request do
 
     it 'returns an error if the pet name is blank' do
       pet_params[:pet][:name] = nil
-      post api_v1_pets_path, params: pet_params, headers: get_auth_token(user)
+      post api_v1_pets_path, params: pet_params, headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:bad_request)
       expect(json['errors']['message']).to eq("Name can't be blank")
@@ -105,7 +105,7 @@ describe Api::V1::PetsController, type: :request do
       params[:name] = new_name
       put api_v1_pet_path(params[:id]),
           params: { pet: params },
-          headers: get_auth_token(user)
+          headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:ok)
       expect(json['name']).to eq(new_name)
@@ -115,13 +115,13 @@ describe Api::V1::PetsController, type: :request do
     it 'only updates pets that belong to an authenticated user' do
       patch api_v1_pet_path(params[:id]),
             params: { pet: params },
-            headers: get_auth_token(create(:user))
+            headers: create(:user).create_new_auth_token
 
       expect(response).to have_http_status(:forbidden)
     end
 
     it 'returns an error if the pet is not found' do
-      put api_v1_pet_path(0), headers: get_auth_token(user)
+      put api_v1_pet_path(0), headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:not_found)
     end
@@ -133,7 +133,7 @@ describe Api::V1::PetsController, type: :request do
       params.delete(:birth_date)
       patch api_v1_pet_path(params[:id]),
             params: { pet: params },
-            headers: get_auth_token(user)
+            headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:ok)
       expect(json['name']).to eq(new_name)
@@ -144,7 +144,7 @@ describe Api::V1::PetsController, type: :request do
       params[:name] = ''
       put api_v1_pet_path(params[:id]),
           params: { pet: params },
-          headers: get_auth_token(user)
+          headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:bad_request)
       expect(json['errors']['message']).to eq("Name can't be blank")
@@ -160,21 +160,21 @@ describe Api::V1::PetsController, type: :request do
 
     it 'deletes a pet that belongs to an authenticated user' do
       expect do
-        delete api_v1_pet_path(pet.id), headers: get_auth_token(user)
+        delete api_v1_pet_path(pet.id), headers: user.create_new_auth_token
       end.to change { Pet.count }.by(-1)
 
       expect(response).to have_http_status(:ok)
     end
 
     it 'returns an error if the pet is not found' do
-      delete api_v1_pet_path(0), headers: get_auth_token(user)
+      delete api_v1_pet_path(0), headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:not_found)
     end
 
     it 'does not delete a pet belonging to another user' do
       expect do
-        delete api_v1_pet_path(pet.id), headers: get_auth_token(create(:user))
+        delete api_v1_pet_path(pet.id), headers: create(:user).create_new_auth_token
       end.to_not change(Pet, :count)
 
       expect(response).to have_http_status(:forbidden)
@@ -188,7 +188,7 @@ describe Api::V1::PetsController, type: :request do
       allow(pet_double)
         .to receive_message_chain(:errors, :full_messages, :to_sentence)
         .and_return('Cannot delete')
-      delete api_v1_pet_path(pet.id), headers: get_auth_token(user)
+      delete api_v1_pet_path(pet.id), headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:bad_request)
       expect(json['errors']['message']).to eq('Cannot delete')

@@ -13,7 +13,7 @@ describe Api::V1::BehaviorsController, type: :request do
     end
 
     it 'returns the index for an authenticated user' do
-      get api_v1_pet_behaviors_path(pet.id), headers: get_auth_token(user)
+      get api_v1_pet_behaviors_path(pet.id), headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:ok)
       expect(json.first['id']).to eq(behavior.id)
@@ -28,7 +28,7 @@ describe Api::V1::BehaviorsController, type: :request do
     end
 
     it 'returns show behavior for an authenticated user' do
-      get api_v1_behavior_path(behavior), headers: get_auth_token(user)
+      get api_v1_behavior_path(behavior), headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:ok)
       expect(json['id']).to eq(behavior.id)
@@ -40,7 +40,7 @@ describe Api::V1::BehaviorsController, type: :request do
     end
 
     it 'only shows behaviors that belong to the authenticated user' do
-      get api_v1_behavior_path(behavior), headers: get_auth_token(create(:user))
+      get api_v1_behavior_path(behavior), headers: create(:user).create_new_auth_token
 
       expect(response).to have_http_status(:forbidden)
       expect(json['errors']['code']).to eq(403)
@@ -48,7 +48,7 @@ describe Api::V1::BehaviorsController, type: :request do
     end
 
     it 'returns record not found error if record does not exist' do
-      get api_v1_behavior_path(0), headers: get_auth_token(create(:user))
+      get api_v1_behavior_path(0), headers: create(:user).create_new_auth_token
 
       expect(response).to have_http_status(:not_found)
     end
@@ -77,7 +77,9 @@ describe Api::V1::BehaviorsController, type: :request do
     end
 
     it 'returns an error if the behavior key is missing' do
-      post api_v1_pet_behaviors_path(pet.id), params: {}, headers: get_auth_token(user)
+      post api_v1_pet_behaviors_path(pet.id),
+           params: {},
+           headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:bad_request)
       expect(json['errors']['message']).to match(/param is missing/)
@@ -87,7 +89,7 @@ describe Api::V1::BehaviorsController, type: :request do
       params[:behavior][:name] = nil
       post api_v1_pet_behaviors_path(pet.id),
            params: params,
-           headers: get_auth_token(user)
+           headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:bad_request)
       expect(json['errors']['message']).to eq("Name can't be blank")
@@ -102,7 +104,7 @@ describe Api::V1::BehaviorsController, type: :request do
       params[:name] = new_name
       put api_v1_behavior_path(params[:id]),
           params: { behavior: params },
-          headers: get_auth_token(user)
+          headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:ok)
       expect(json['name']).to eq(new_name)
@@ -111,7 +113,7 @@ describe Api::V1::BehaviorsController, type: :request do
     it 'only updates behaviors that belong to an authenticated user' do
       patch api_v1_behavior_path(params[:id]),
             params: { behavior: params },
-            headers: get_auth_token(create(:user))
+            headers: create(:user).create_new_auth_token
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -121,7 +123,7 @@ describe Api::V1::BehaviorsController, type: :request do
       params.delete(:name)
       patch api_v1_behavior_path(params[:id]),
             params: { behavior: params },
-            headers: get_auth_token(user)
+            headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:ok)
       expect(json['name']).to eq(old_name)
@@ -131,14 +133,14 @@ describe Api::V1::BehaviorsController, type: :request do
       params[:name] = ''
       put api_v1_behavior_path(params[:id]),
           params: { behavior: params },
-          headers: get_auth_token(user)
+          headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:bad_request)
       expect(json['errors']['message']).to eq("Name can't be blank")
     end
 
     it 'returns record not found error if record does not exist' do
-      patch api_v1_behavior_path(0), params: {}, headers: get_auth_token(create(:user))
+      patch api_v1_behavior_path(0), params: {}, headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:not_found)
     end
@@ -163,7 +165,7 @@ describe Api::V1::BehaviorsController, type: :request do
     it 'does not delete a behavior belonging to another user' do
       expect do
         delete api_v1_behavior_path(behavior.id),
-               headers: get_auth_token(create(:user))
+               headers: create(:user).create_new_auth_token
       end.to_not change(Behavior, :count)
 
       expect(response).to have_http_status(:forbidden)
@@ -177,14 +179,14 @@ describe Api::V1::BehaviorsController, type: :request do
       allow(behavior_double)
         .to receive_message_chain(:errors, :full_messages, :to_sentence)
         .and_return('Cannot delete')
-      delete api_v1_behavior_path(behavior.id), headers: get_auth_token(user)
+      delete api_v1_behavior_path(behavior.id), headers: user.create_new_auth_token
 
       expect(response).to have_http_status(:bad_request)
       expect(json['errors']['message']).to eq('Cannot delete')
     end
 
     it 'returns record not found error if record does not exist' do
-      delete api_v1_behavior_path(0), headers: get_auth_token(create(:user))
+      delete api_v1_behavior_path(0), headers: create(:user).create_new_auth_token
 
       expect(response).to have_http_status(:not_found)
     end
