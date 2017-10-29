@@ -28,6 +28,8 @@ gem 'bcrypt', '~> 3.1.11', platforms: :ruby
 
 group :test do
   gem 'simplecov', require: false
+  gem 'timecop'
+  gem 'validates_timeliness', '~> 4.0'
 end
 
 group :development, :test do

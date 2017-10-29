@@ -31,3 +31,9 @@
 
 en:
   hello: "Hello world"
+  activerecord:
+    errors:
+      messages:
+        on_or_before: "must be equal to or before %{restriction}"
+        on_or_after:  "must be equal to or after %{restriction}"
+        between: "must be between %{earliest} and %{latest}"
