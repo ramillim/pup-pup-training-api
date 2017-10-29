@@ -26,8 +26,9 @@ describe Behavior, type: :model do
   end
 
   describe 'TrainingActivity calculations' do
+    let(:behavior) { create(:behavior) }
+
     it '#training_duration_total sums the duration of all activities' do
-      behavior = create(:behavior)
       behavior.training_activities = [
         create(:training_activity, training_duration: 60),
         create(:training_activity, training_duration: 120)
@@ -36,5 +37,22 @@ describe Behavior, type: :model do
       expect(behavior.training_duration_total).to eq(180)
     end
 
+    it '#last_training_time returns the last time the behavior was trained' do
+      newest_activity = create(:training_activity, trained_at: 2.days.ago)
+      behavior.training_activities = [
+        create(:training_activity, trained_at: 4.days.ago),
+        newest_activity,
+        create(:training_activity, trained_at: 3.days.ago)
+      ]
+
+      expect(behavior.last_training_time)
+        .to be_within(1.second).of (newest_activity.trained_at)
+      # ActiveRecord time precision is greater than DB precision, which only
+      # goes out to 6 decimal points.
+    end
+
+    it '#last_training_time returns nil if there are no activities' do
+      expect(behavior.last_training_time).to be_nil
+    end
   end
 end
