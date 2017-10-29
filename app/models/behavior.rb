@@ -3,4 +3,8 @@ class Behavior < ApplicationRecord
   has_many :training_activities, dependent: :destroy
 
   validates :name, presence: true
+
+  def training_duration_total
+    training_activities.sum(:training_duration)
+  end
 end
