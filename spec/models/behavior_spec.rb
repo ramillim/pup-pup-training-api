@@ -46,7 +46,7 @@ describe Behavior, type: :model do
       ]
 
       expect(behavior.last_training_time)
-        .to be_within(1.second).of (newest_activity.trained_at)
+        .to be_within(1.second).of newest_activity.trained_at
       # ActiveRecord time precision is greater than DB precision, which only
       # goes out to 6 decimal points.
     end
