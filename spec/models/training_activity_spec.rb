@@ -35,6 +35,12 @@ describe TrainingActivity, type: :model do
       expect(subject.errors['trained_at'])
         .to include("must be equal to or before #{current_time}")
     end
+
+    it 'must be a properly formatted datetime' do
+      subject.trained_at = 'not a date'
+      expect(subject).to_not be_valid
+      expect(subject.errors['trained_at']).to include('is not a valid datetime')
+    end
   end
 
   describe 'validates #training_duration' do
