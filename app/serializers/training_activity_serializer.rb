@@ -1,4 +1,4 @@
-class TrainingActivity < ActiveModel::Serializer
+class TrainingActivitySerializer < ActiveModel::Serializer
   attributes :id,
              :name,
              :notes,
@@ -10,4 +10,8 @@ class TrainingActivity < ActiveModel::Serializer
              :distraction_notes,
              :trained_at,
              :training_duration
+
+  def trained_at
+    object.trained_at.try(:iso8601)
+  end
 end

@@ -9,7 +9,7 @@ FactoryGirl.define do
     distance_notes ''
     distraction { rand(0..5) }
     distraction_notes ''
-    trained_at { Time.current }
+    trained_at { Time.current.iso8601 }
     training_duration { rand(1..20).minutes.to_s }
   end
 end
