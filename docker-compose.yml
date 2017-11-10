@@ -1,4 +1,4 @@
-version: '3'
+version: '3.3'
 services:
   web:
     build: .
@@ -7,16 +7,15 @@ services:
       - db
     volumes:
       - .:/pup-pup-training-api
+      - bundle_cache:/bundle
     ports:
-      - "3001:3001"
+      - '3001:3001'
     depends_on:
       - db
     stdin_open: true
     tty: true
   db:
     image: postgres:10.0
-  # bundle cache
-  bundle:
-    image: puppuptrainingapi_web
-    volumes:
-      - /bundle
+
+volumes:
+  bundle_cache:
