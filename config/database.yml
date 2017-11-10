@@ -8,14 +8,14 @@ default: &default
 
 development:
   <<: *default
-  database: pup-pup-trainer-api_development
+  database: pup-pup-training-api_development
 
 test:
   <<: *default
-  database: pup-pup-trainer-api_test
+  database: pup-pup-training-api_test
 
 production:
   <<: *default
-  database: pup-pup-trainer-api_production
-  username: pup-pup-trainer-api
-  password: <%= ENV['PUP-PUP-TRAINER-API_DATABASE_PASSWORD'] %>
+  database: pup-pup-training-api_production
+  username: pup-pup-training-api
+  password: <%= ENV['PUP-PUP-TRAINING-API_DATABASE_PASSWORD'] %>
