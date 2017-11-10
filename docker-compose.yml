@@ -1,7 +1,5 @@
 version: '3'
 services:
-  db:
-    image: postgres:10.0
   web:
     build: .
     command: bundle exec rails s -p 3001 -b '0.0.0.0'
@@ -15,6 +13,8 @@ services:
       - db
     stdin_open: true
     tty: true
+  db:
+    image: postgres:10.0
   # bundle cache
   bundle:
     image: puppuptrainingapi_web

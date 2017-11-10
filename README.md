@@ -18,7 +18,7 @@ docker-compose build
 
 docker-compose up -d
 
-docker-compose run web bundle exec db:create db:migrate
+docker-compose exec web bundle exec rails db:create db:migrate db:test:prepare
 ```
 
 To stop the containers if running in the background with the -d option, use:
@@ -30,7 +30,7 @@ Commands are executed on the "web" container using "docker-compose run web" foll
 
 To run tests with rspec:
 ```bash
-docker-compose run web bundle exec
+docker-compose run web bundle exec rspec
 ```
 
 ## Production
