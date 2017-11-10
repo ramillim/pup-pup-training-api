@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :user do
     email { SecureRandom.uuid + '@foobar.com' }
     password 'abcd1234'

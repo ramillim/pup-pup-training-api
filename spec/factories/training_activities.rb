@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :training_activity do
     association :behavior
     name 'Activity'

@@ -56,7 +56,7 @@ describe Api::V1::BehaviorsController, type: :request do
 
   describe 'POST /api/v1/pets/:pet_id/behaviors' do
     let(:params) do
-      { behavior: FactoryGirl.attributes_for(:behavior) }
+      { behavior: FactoryBot.attributes_for(:behavior) }
     end
 
     it 'requires authentication' do

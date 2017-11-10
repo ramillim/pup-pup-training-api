@@ -69,7 +69,7 @@ describe Api::V1::TrainingActivitiesController, type: :request do
 
   describe 'POST /api/v1/behaviors/:behavior_id/training_activities' do
     let(:params) do
-      { training_activity: FactoryGirl.attributes_for(:training_activity) }
+      { training_activity: FactoryBot.attributes_for(:training_activity) }
     end
 
     it 'requires authentication' do
@@ -113,7 +113,7 @@ describe Api::V1::TrainingActivitiesController, type: :request do
     let(:params) do
       {
         id: activity.id,
-        training_activity: FactoryGirl.attributes_for(:training_activity)
+        training_activity: FactoryBot.attributes_for(:training_activity)
       }
     end
 

@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :behavior do
     association :pet
     name 'Behavior'

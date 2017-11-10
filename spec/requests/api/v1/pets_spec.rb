@@ -55,7 +55,7 @@ describe Api::V1::PetsController, type: :request do
 
   describe 'POST /api/v1/pets' do
     let(:pet_params) do
-      { pet: FactoryGirl.attributes_for(:pet) }
+      { pet: FactoryBot.attributes_for(:pet) }
     end
 
     it 'requires authentication' do
