@@ -12,11 +12,9 @@ This project uses Docker Engine and Docker Compose for development and testing. 
 https://docs.docker.com/engine/installation/
 https://docs.docker.com/compose/install/
 
-To prepare the development environment, execute the following. This will build and start the Rails server and Postgres database in the background. After that, it creates the dev and test databases and runs migrations.
+To prepare the development environment, execute the following. This will build and start the Rails server and Postgres database. After that, it creates the dev and test databases and runs migrations.
 ```bash
-docker-compose build
-
-docker-compose up -d
+docker-compose up --build
 
 docker-compose exec web bundle exec rails db:create db:migrate db:test:prepare
 ```
