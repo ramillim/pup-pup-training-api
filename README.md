@@ -26,7 +26,12 @@ docker-compose stop
 
 Commands are executed on the "web" container using "docker-compose run web" followed by the commands to execute on the container.
 
-To run tests with rspec:
+To run tests with rspec if you are already running the containers:
+```bash
+docker-compose exec web bundle exec rspec
+```
+
+or to run tests when you need to start the containers:
 ```bash
 docker-compose run web bundle exec rspec
 ```
